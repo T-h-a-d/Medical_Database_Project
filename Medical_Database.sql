@@ -8,19 +8,19 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema Medical_DB
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema Medical_DB
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
-USE `mydb` ;
+CREATE SCHEMA IF NOT EXISTS `Medical_DB` DEFAULT CHARACTER SET utf8 ;
+USE `Medical_DB` ;
 
 -- -----------------------------------------------------
--- Table `mydb`.`Doctor`
+-- Table `Medical_DB`.`Doctor`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Doctor` (
+CREATE TABLE IF NOT EXISTS `Medical_DB`.`Doctor` (
   `Doctor_id` INT NOT NULL AUTO_INCREMENT,
   `D_name` VARCHAR(45) NOT NULL,
   `Phone` VARCHAR(45) NOT NULL,
@@ -31,9 +31,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`Patient`
+-- Table `Medical_DB`.`Patient`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Patient` (
+CREATE TABLE IF NOT EXISTS `Medical_DB`.`Patient` (
   `Patient_id` INT NOT NULL AUTO_INCREMENT,
   `P_name` VARCHAR(45) NOT NULL,
   `Birthday` DATETIME NOT NULL,
@@ -44,37 +44,29 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`Has`
+-- Table `Medical_DB`.`Has`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Has` (
+CREATE TABLE IF NOT EXISTS `Medical_DB`.`Has` (
   `Patient_id` INT NOT NULL,
   `Doctor_id` INT NOT NULL,
   PRIMARY KEY (`Patient_id`, `Doctor_id`),
   CONSTRAINT `Patient_id`
     FOREIGN KEY ()
-    REFERENCES `mydb`.`Patient` ()
+    REFERENCES `Medical_DB`.`Patient` ()
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `Doctor_id`
     FOREIGN KEY (`Patient_id` , `Doctor_id`)
-    REFERENCES `mydb`.`Doctor` (`Doctor_id` , `Doctor_id`)
+    REFERENCES `Medical_DB`.`Doctor` (`Doctor_id` , `Doctor_id`)
     ON DELETE SET NULL
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`table1`
+-- Table `Medical_DB`.`Prescription`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`table1` (
-)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `mydb`.`Prescription`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Prescription` (
+CREATE TABLE IF NOT EXISTS `Medical_DB`.`Prescription` (
   `Prescription_id` INT NOT NULL AUTO_INCREMENT,
   `Drug_name` VARCHAR(45) NOT NULL,
   `Amount` INT NOT NULL,
@@ -83,9 +75,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`Diagnosis`
+-- Table `Medical_DB`.`Diagnosis`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Diagnosis` (
+CREATE TABLE IF NOT EXISTS `Medical_DB`.`Diagnosis` (
   `Diagnosis_id` INT NOT NULL AUTO_INCREMENT,
   `Description` TEXT NULL,
   `Prescription_id` INT NULL,
@@ -93,16 +85,16 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Diagnosis` (
   INDEX `Prescription_id_idx` (`Prescription_id` ASC),
   CONSTRAINT `Prescription_id`
     FOREIGN KEY (`Prescription_id`)
-    REFERENCES `mydb`.`Prescription` (`Prescription_id`)
+    REFERENCES `Medical_DB`.`Prescription` (`Prescription_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`Appointment`
+-- Table `Medical_DB`.`Appointment`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Appointment` (
+CREATE TABLE IF NOT EXISTS `Medical_DB`.`Appointment` (
   `App_id` INT NOT NULL AUTO_INCREMENT,
   `Visit_reason` TEXT NOT NULL,
   `Patient_id` INT NOT NULL,
@@ -115,43 +107,43 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Appointment` (
   INDEX `Diagnosis_id_idx` (`Diagnosis_id` ASC),
   CONSTRAINT `Patient_id`
     FOREIGN KEY (`Patient_id`)
-    REFERENCES `mydb`.`Patient` (`Patient_id`)
+    REFERENCES `Medical_DB`.`Patient` (`Patient_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `Doctor_id`
     FOREIGN KEY (`Doctor_id`)
-    REFERENCES `mydb`.`Doctor` (`Doctor_id`)
+    REFERENCES `Medical_DB`.`Doctor` (`Doctor_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `Diagnosis_id`
     FOREIGN KEY (`Diagnosis_id`)
-    REFERENCES `mydb`.`Diagnosis` (`Diagnosis_id`)
+    REFERENCES `Medical_DB`.`Diagnosis` (`Diagnosis_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-USE `mydb` ;
+USE `Medical_DB` ;
 
 -- -----------------------------------------------------
--- Placeholder table for view `mydb`.`view1`
+-- Placeholder table for view `Medical_DB`.`view1`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`view1` (`id` INT);
+CREATE TABLE IF NOT EXISTS `Medical_DB`.`view1` (`id` INT);
 
 -- -----------------------------------------------------
 --  routine1
 -- -----------------------------------------------------
 
 DELIMITER $$
-USE `mydb`$$
+USE `Medical_DB`$$
 $$
 
 DELIMITER ;
 
 -- -----------------------------------------------------
--- View `mydb`.`view1`
+-- View `Medical_DB`.`view1`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`view1`;
-USE `mydb`;
+DROP TABLE IF EXISTS `Medical_DB`.`view1`;
+USE `Medical_DB`;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
