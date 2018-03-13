@@ -1,3 +1,49 @@
-<form>
-	
-</form>
+<div class="container-fluid py-5">
+	<table class="table text-center">
+		<thead class="thead-inverse">
+			<tr >
+				<th>Name</th>
+				<th>Phone</th>
+				<th>Address</th>
+				<th>Office</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<form id="add_doctor" action="/add_doctor" method="post">
+					<td><input id="D_name" type="text" class="form-control" name="D_name" required></td>
+					<td><input id="Phone" type="text" class="form-control" name="Phone" required></td>
+					<td><input id="Address" type="text" class="form-control" name="Address" required></td>
+					<td><input id="Office" type="text" class="form-control" name="Office" required></td>
+					<td><button class="btn btn-primary">Add Doctor</button></td>
+				</form> 
+			</tr>
+		</tbody>
+		<tbody id="doctor-table">
+			{{#each doctor}}
+				<tr>
+						<td style="display:none">{{this.Doctor_id}}</td>
+						<td>{{this.D_name}}</td>
+						<td>{{this.Phone}}</td>
+						<td>{{this.Address}}</td>
+						<td>{{this.Office}}</td>
+						<td><button class="btn btn-primary">Update</button></td>
+						<td><button onclick="delete_doctor({{this.Doctor_id}})" class="btn btn-danger">Delete</button></td>
+				</tr>
+			{{/each}}
+		</tbody>
+	</table>
+</div>
+
+
+<script type="text/javascript">
+	function delete_doctor(id){
+		$.ajax({
+			url: '/delete_doctor/' + id,
+			type: 'DELETE',
+			success: function(){
+				window.location.href = '/doctors';
+			}
+		});
+	}
+</script>

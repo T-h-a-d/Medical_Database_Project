@@ -24,12 +24,56 @@ app.set('port', process.argv[2]);
 
 
 
-app.get('/create-table', function(res, req, next){
-		create.create_table();
+app.get('/create-table', function(req, res, next){
+
+	pool.query(create.create_table().Doctor, function(err){
+		if(err){
+			res.write(JSON.stringify(err));
+			console.log(err);
+			res.end();
+		}else{
+			pool.query(create.create_table().Patient, function(err){
+				if(err){
+						console.log(err);
+						res.end();
+				}else{
+					pool.query(create.create_table().Has, function(err){
+						if(err){
+							console.log(err);
+							res.end();
+						}else{
+							pool.query(create.create_table().Prescription, function(err){
+								if(err){
+										console.log(err);
+										res.end();			
+								}else{
+									pool.query(create.create_table().Diagnoses, function(err){
+										if(err){
+											console.log(err);
+											res.end();									
+										}else{
+											pool.query(create.create_table().Appointment, function(err){
+												if(err){
+														console.log(err);
+														res.end();	
+												}else{
+													res.render('index');
+												}
+											});
+										}
+									});
+								}
+							});
+						}
+					});
+				}
+			});
+		}
+	});
 });
 
 
-app.get('/', function(res, req, next){
+app.get('/', function(req, res, next){
 	res.render('index');
 });
 
@@ -38,9 +82,54 @@ app.get('/', function(res, req, next){
 ** Doctor paths
 ***************************************************************************************/
 
-app.get('/doctors', function(res, req, next){
-	res.render('doctors');
+app.get('/doctors', function(req, res, next){
+	var context = {};
+	var sql = "SELECT * FROM Doctor";
+	var sqlData = pool.query(sql, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			context.doctor = results;
+			res.render('doctors', context);
+		}
+	})
 });
+
+app.post('/add_doctor', function(req, res, next){
+	var context = {};
+	var sql = "INSERT INTO Doctor (D_name, Phone, Address, Office) VALUES (?, ?, ?, ?)";
+	var inserts = [req.body.D_name, req.body.Phone, req.body.Address, req.body.Office];
+	var sqlData = pool.query(sql, inserts, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			context.doctor = results;
+			res.redirect('/doctors');
+		}
+	})
+});
+
+app.delete('/delete_doctor/:id', function(req, res, next){
+	console.log('got here');
+	var sql = "DELETE FROM Doctor WHERE Doctor_id = ?";
+	console.log(req.params.id);
+	var inserts = [req.params.id];
+	var sqlData = pool.query(sql, inserts, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			res.status(202).end();
+		}
+	})
+
+
+})
 
 
 
@@ -48,8 +137,19 @@ app.get('/doctors', function(res, req, next){
 ** Patient paths
 ***************************************************************************************/
 
-app.get('/patients', function(res, req, next){
-	res.render('patients');
+app.get('/patients', function(req, res, next){
+	var context = {};
+	var sql = "SELECT * FROM Doctor";
+	var sqlData = pool.query(sql, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			console.log(results);
+			res.render('patients', context);
+		}
+	})
 });
 
 
@@ -57,7 +157,7 @@ app.get('/patients', function(res, req, next){
 ** Patient/Doctor Relationship paths
 ***************************************************************************************/
 
-app.get('/patient-doctor', function(res, req, next){
+app.get('/patient-doctor', function(req, res, next){
 	res.render('patient-doctor');
 });
 
@@ -66,7 +166,7 @@ app.get('/patient-doctor', function(res, req, next){
 ** Appointment paths
 ***************************************************************************************/
 
-app.get('/appointments', function(res, req, next){
+app.get('/appointments', function(req, res, next){
 	res.render('appointments');
 });
 
@@ -75,7 +175,7 @@ app.get('/appointments', function(res, req, next){
 ** Diagnoses paths
 ***************************************************************************************/
 
-app.get('/diagnoses', function(res, req, next){
+app.get('/diagnoses', function(req, res, next){
 	res.render('diagnoses');
 });
 
@@ -83,7 +183,7 @@ app.get('/diagnoses', function(res, req, next){
 ** Prescription paths
 ***************************************************************************************/
 
-app.get('/prescriptions', function(res, req, next){
+app.get('/prescriptions', function(req, res, next){
 	res.render('prescriptions');
 });
 
