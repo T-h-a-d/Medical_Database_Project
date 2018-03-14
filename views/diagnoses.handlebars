@@ -1,16 +1,17 @@
 <div class="jumbotron text-center"><h1 class="display-3">Diagnoses</h1></div>	
-<div class="container-fluid py-5">
-	<div class="form-row text-center">
-		<div class="col-sm-6">
+	<div class="row">
+		<div class="col-lg-3">
+		</div>
+		<div class="col-lg-6 text-center">
 			<form id="find_app_id" action="/find_appointment" method="post">
-				<div class="input-group">
-			    <input onkeyup="search_appointments(this.value)" type="text" class="form-control" name="P_name" 
-			    placeholder="Search for an appointment by a patient or doctor's full name" required>
-			  </div>
+					<div class="input-group">
+						    <input onkeyup="search_appointments(this.value)" type="text" class="form-control" name="P_name" 
+						    placeholder="Search for an appointment by a patient or doctor's full name" required>
+					</div>
 			</form>
 		</div>
+		<div class="col-lg-3"></div>
 	</div>
-</div>
 
 <div class="container-fluid py-5">
 	<table class="table text-center">
@@ -23,7 +24,7 @@
 				<th>Diagnosis Description</th>
 			</tr>
 		</thead>
-		<tbody id="search_results">	
+		<tbody id="search_results" class="pb-5">	
 		</tbody>
 		<tbody id="diagnosis-table">
 			{{#each diagnosis}}
@@ -34,7 +35,6 @@
 						<td>{{this.D_name}}</td>
 						<td>{{this.Date}}</td>
 						<td>{{this.Description}}</td>
-						<td><button class="btn btn-primary">Update</button></td>
 						<td><button onclick="delete_diagnosis({{this.Diagnosis_id}})" class="btn btn-danger">Delete</button></td>
 				</tr>
 			{{/each}}
@@ -77,16 +77,27 @@
 				data.forEach(function(element){
 					$('#search_results').append(`
 					<tr>
-								<td>${element.App_id}</td>
-								<td>${element.P_name}</td>
-								<td>${element.D_name}</td>
-								<td>${element.Date}</td>
-								<td><textarea id="${element.App_id}" type="text" class="form-control" name="Description" required></textarea>
-								</td>
-								<td><button id ="add_diagnosis" class="btn btn-primary">Add Diagnosis</button>
-								</td>
+						<td>${element.App_id}</td>
+						<td>${element.P_name}</td>
+						<td>${element.D_name}</td>
+						<td>${element.Date}</td>
+						<td>
+							<form action = "/add_diagnosis" method="POST">
+								<textarea style = "display:inline" id="Description${element.App_id}
+								"type="text" value ="${element.Description}" 
+								class="form-control" name="Description" required></textarea>
+								<input style = "display: none" name = "App_id" value="${element.App_id}">
+								<button id="${element.App_id}" class="btn btn-primary">Add Diagnosis</button>
+							</form>
+						</td>
 					</tr>
 				`)
+					$('#Description'+ element.App_id).attr('value', element.Description);
+
+					if(element.Description !== null){
+						$('#' + element.App_id).html('');
+						$('#' +element.App_id).text('Update Diagnosis');
+					}
 				});
 			}
 		});

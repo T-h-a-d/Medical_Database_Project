@@ -1,4 +1,5 @@
 var express	= require('express');
+var url = require('url');
 var mysql = require('mysql');
 var bodyParser = require('body-parser');
 var app = express();
@@ -335,6 +336,7 @@ app.get('/appointments', function(req, res, next){
 
 app.post('/add_appointment', function(req, res, next){
 	var context = {};
+
 	var sql = "INSERT INTO Appointment (Patient_id, Doctor_id, Visit_reason, Date) VALUES (?, ?, ?, ?)"
 	var inserts = [req.body.Patient_id, req.body.Doctor_id, req.body.Visit_reason, req.body.Date];
 	var sqlData = pool.query(sql, inserts, function(error, results, fields){
@@ -368,8 +370,95 @@ app.delete('/delete_appointment/:id', function(req, res, next){
 ***************************************************************************************/
 
 app.get('/diagnoses', function(req, res, next){
-	res.render('diagnoses');
+	var context = {};
+	context.appointment_search = req.query;
+	var sql = "SELECT * FROM Diagnosis INNER JOIN Appointment ON Diagnosis.Diagnosis_id = Appointment.Diagnosis_id" 
+							+ " INNER JOIN Patient ON Appointment.Patient_id = Patient.Patient_id" 
+								+ " INNER JOIN Doctor ON Appointment.Doctor_id = Doctor.Doctor_id";
+	var sqlData = pool.query(sql, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			context.diagnosis = results;
+			var sql = "SELECT * FROM Diagnosis";
+			pool.query(sql, function(err, results, fields){
+				if(err){
+					res.write(JSON.stringify(err));
+					console.log(err);
+					res.end();
+				}else{
+				 context.appointment = results;
+
+				 res.render('diagnoses', context);
+				}
+			})
+		}
+	})
 });
+
+app.post('/add_diagnosis', function(req, res, next){
+	var context = {};
+	console.log(req.body);
+	var sql = "INSERT INTO Diagnosis (Description) VALUES (?)";
+	var inserts = [req.body.Description];
+	var sqlData = pool.query(sql, inserts, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			context.Diagnosis_id = results.insertId;
+			var sql = "UPDATE Appointment SET Diagnosis_id = ? WHERE App_id = ?";
+			var insert = [context.Diagnosis_id, req.body.App_id]
+			pool.query(sql, insert, function(error, results, fields){
+				if(error){
+						res.write(JSON.stringify(error));
+						console.log(error);
+						res.end();
+				}else{
+					res.redirect('/diagnoses');
+				}
+			})
+		}
+	})
+});
+
+app.delete('/delete_diagnosis/:id', function(req, res, next){
+	var sql = "DELETE FROM Diagnosis WHERE Diagnosis_id = ?";
+	var inserts = [req.params.id];
+	var sqlData = pool.query(sql, inserts, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			res.status(202).end();
+		}
+	});
+})
+
+app.get('/find_appointment/:search', function(req, res, next){
+	var context = {};
+	var sql = "SELECT * FROM Appointment" 
+						+ " INNER JOIN Patient ON Appointment.Patient_id = Patient.Patient_id"  
+							+ " INNER JOIN Doctor ON Appointment.Doctor_id = Doctor.Doctor_id" 
+								+ " LEFT JOIN Diagnosis ON Appointment.Diagnosis_id = Diagnosis.Diagnosis_id"
+									+ " WHERE P_name LIKE ? OR D_name LIKE ?";
+	var inserts = [req.params.search, req.params.search];
+	pool.query(sql, inserts, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			res.send(results);
+		}
+	});
+});
+
+
 
 /**************************************************************************************
 ** Prescription paths
@@ -379,7 +468,60 @@ app.get('/prescriptions', function(req, res, next){
 	res.render('prescriptions');
 });
 
+app.post('/add_prescription', function(req, res, next){
+	var context = {};
+	var sql = "INSERT INTO Prescription (Drug_name, Amount) VALUES (?, ?";
+	var inserts = [req.body.Drug_name, req.body.Amount];
+	var sqlData = pool.query(sql, inserts, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			context.doctor = results;
+			res.redirect('/diagnoses');
+		}
+	})
+});
 
+app.delete('/delete_diagnosis/:id', function(req, res, next){
+	var sql = "DELETE FROM Diagnosis WHERE Diagnosis_id = ?";
+	var inserts = [req.params.id];
+	var sqlData = pool.query(sql, inserts, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			res.status(202).end();
+		}
+	});
+})
+
+app.get('/find_appointment_diagnosis/:search', function(req, res, next){
+	var context = {};
+	var sql = "SELECT * FROM Appointment" 
+						+ " INNER JOIN Patient ON Appointment.Patient_id = Patient.Patient_id"  
+							+ " INNER JOIN Doctor ON Appointment.Doctor_id = Doctor.Doctor_id" 
+								+ " INNER JOIN Diagnosis ON Appointment.Diagnosis_id = Diagnosis.Diagnosis_id"
+									+ " LEFT JOIN Prescription ON Diagnosis.Prescription_id = Prescription.Prescription_id"
+										+ " WHERE P_name LIKE ? OR D_name LIKE ?";
+	var inserts = [req.params.search, req.params.search];
+	pool.query(sql, inserts, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			console.log(results);
+			res.send(results);
+		}
+	});
+});
+
+/**************************************************************************************
+** Error paths
+***************************************************************************************/
 
 app.use(function(req,res){
   res.status(404);
