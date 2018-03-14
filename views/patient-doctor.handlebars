@@ -10,14 +10,14 @@
 			<tr>
 				<form id="add_patient_doctor" action="/add_patient_doctor" method="POST">
 					<td>
-						<select id="P_name" type="text" class="form-control" name="P_name" required>
+						<select id="P_name" type="text" class="form-control" name="Patient_id" required>
 							{{#each patient_name}}
 								<option value="{{this.Patient_id}}">{{this.P_name}}</option>
 							{{/each}}
 						</select>
 					</td>
 					<td>
-						<select id="D_name" type="text" class="form-control" name="D_name" required>
+						<select id="D_name" type="text" class="form-control" name="Doctor_id" required>
 							{{#each doctor_name}}
 								<option value="{{this.Doctor_id}}">{{this.D_name}}</option>
 							{{/each}}
@@ -34,7 +34,6 @@
 						<td>{{this.P_name}}</td>
 						<td style="display:none">{{this.Doctor_id}}</td>
 						<td>{{this.D_name}}</td>					
-						<td><button class="btn btn-primary">Update</button></td>
 						<td><button onclick="delete_patient_doctor({{this.Patient_id}}, {{this.Doctor_id}})" class="btn btn-danger">
 						Delete</button></td>
 				</tr>
@@ -46,11 +45,18 @@
 
 <script type="text/javascript">
 	function delete_patient_doctor(p_id, d_id){
+		var delete_ids = {
+			p_id: p_id,
+
+			d_id: d_id
+		}
+
 		$.ajax({
-			url: '/delete_patient_doctor/' + p_id + '/' + d_id,
+			url: '/delete_patient_doctor',
 			type: 'DELETE',
+			data: delete_ids,
 			success: function(){
-				window.location.href = '/patient_doctor';
+				window.location.href = '/patient-doctor';
 			}
 		});
 	}
