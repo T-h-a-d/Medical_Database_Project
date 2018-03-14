@@ -23,10 +23,10 @@
 				<th>Diagnosis Description</th>
 				<th>
 					<div class="row">
-						<div class="col-sm">
+						<div class="col-sm text-center">
 							Drug Name
 						</div>
-						<div class="col-sm">
+						<div class="col-sm text-center">
 							Amount
 						</div>
 					</div>
@@ -45,13 +45,13 @@
 						<td>{{this.Description}}</td>
 						<td>
 							<div class="row">
-								<div class="col-sm mr-2">
-										<div class="form-group row">
-											this.Drug_name
+								<div class="col-sm mx-5">
+										<div class="form-group row text-center">
+											{{this.Drug_name}}
 										</div>
 									</div>
-									<div class="col-sm">
-										<div class="form-group row">
+									<div class="col-sm mx-5">
+										<div class="form-group row text-center">
 											{{this.Amount}}
 										</div>
 									</div>	
@@ -71,24 +71,10 @@
 			url: '/delete_prescription/' + id,
 			type: 'DELETE',
 			success: function(){
-				window.location.href = '/diagnoses';
+				window.location.href = '/prescriptions';
 			}
 		});
 	}
-
-	$('#search_results').on('click', '#add_diagnosis', function(app_id){
-		console.log(this.val());
-		var data = $('#' + app_id)
-		console.log(data);
-		$.ajax({
-			url: '/add_diagnosis',
-			type: 'POST',
-			data: data,
-			success: function(){
-				window.location.href = '/diagnoses';
-			}
-		});
-	});
 
 	function search_appointments(search){
 		$.ajax({
@@ -108,7 +94,7 @@
 							<div class="row">
 								<div class="col-sm mr-2">
 										<div class="form-group row">
-											<input id="Description${element.App_id} "type="text" class="form-control" name="Drug_name" required>
+											<input id="Description${element.App_id}  value="${element.Drug_n}" type="text" class="form-control" name="Drug_name" required>
 										</div>
 									</div>
 									<div class="col-sm">
@@ -117,7 +103,7 @@
 										</div>
 									</div>	
 								</div>
-								<input style = "display: none" name = "App_id" value="${element.App_id}">
+								<input style = "display: none" name = "Diagnosis_id" value="${element.Diagnosis_id}">
 								<button id="${element.App_id}" class="btn btn-primary my-3">Add Prescription</button>
 							</form>
 						</td>
@@ -125,6 +111,11 @@
 				`)
 					if(element.Drug_name !== null){
 						$('#Description'+ element.App_id).attr('value', element.Drug_name);
+					}
+
+					if(element.Drug_name !== null){
+						$('#' + element.App_id).html('');
+						$('#' +element.App_id).text('Update Prescription');
 					}
 				});
 			}

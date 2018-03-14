@@ -465,12 +465,30 @@ app.get('/find_appointment/:search', function(req, res, next){
 ***************************************************************************************/
 
 app.get('/prescriptions', function(req, res, next){
-	res.render('prescriptions');
+	var context = {};
+	context.appointment_search = req.query;
+	var sql = "SELECT * FROM Prescription" 
+							+ " INNER JOIN Diagnosis ON Prescription.Prescription_id = Diagnosis.Prescription_id" 
+								+ " INNER JOIN Appointment ON Diagnosis.Diagnosis_id = Appointment.Diagnosis_id" 
+									+ " INNER JOIN Patient ON Appointment.Patient_id = Patient.Patient_id"
+										+ " INNER JOIN Doctor ON Appointment.Doctor_id = Doctor.Doctor_id";
+	var sqlData = pool.query(sql, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			context.prescription = results
+			res.render('prescriptions', context);
+				}
+		});
 });
+
+
 
 app.post('/add_prescription', function(req, res, next){
 	var context = {};
-	var sql = "INSERT INTO Prescription (Drug_name, Amount) VALUES (?, ?";
+	var sql = "INSERT INTO Prescription (Drug_name, Amount) VALUES (?, ?)";
 	var inserts = [req.body.Drug_name, req.body.Amount];
 	var sqlData = pool.query(sql, inserts, function(error, results, fields){
 		if(error){
@@ -478,14 +496,24 @@ app.post('/add_prescription', function(req, res, next){
 			console.log(error);
 			res.end();
 		}else{
-			context.doctor = results;
-			res.redirect('/diagnoses');
+			context.Prescription_id = results.insertId;
+			var sql = "UPDATE Diagnosis SET Prescription_id = ? WHERE Diagnosis_id = ?";
+			var insert = [context.Prescription_id, req.body.Diagnosis_id];
+			pool.query(sql, insert, function(error, results, fields){
+				if(error){
+					res.write(JSON.stringify(error));
+					console.log(error);
+					res.end();
+				}else{
+					res.redirect('/prescriptions');
+				}
+			})
 		}
 	})
 });
 
-app.delete('/delete_diagnosis/:id', function(req, res, next){
-	var sql = "DELETE FROM Diagnosis WHERE Diagnosis_id = ?";
+app.delete('/delete_prescription/:id', function(req, res, next){
+	var sql = "DELETE FROM Prescription WHERE Prescription_id = ?";
 	var inserts = [req.params.id];
 	var sqlData = pool.query(sql, inserts, function(error, results, fields){
 		if(error){
@@ -513,7 +541,6 @@ app.get('/find_appointment_diagnosis/:search', function(req, res, next){
 			console.log(error);
 			res.end();
 		}else{
-			console.log(results);
 			res.send(results);
 		}
 	});
