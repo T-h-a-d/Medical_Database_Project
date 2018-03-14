@@ -47,7 +47,7 @@ app.get('/create-table', function(req, res, next){
 										console.log(err);
 										res.end();			
 								}else{
-									pool.query(create.create_table().Diagnoses, function(err){
+									pool.query(create.create_table().Diagnosis, function(err){
 										if(err){
 											console.log(err);
 											res.end();									
@@ -116,7 +116,6 @@ app.post('/add_doctor', function(req, res, next){
 app.delete('/delete_doctor/:id', function(req, res, next){
 	console.log('got here');
 	var sql = "DELETE FROM Doctor WHERE Doctor_id = ?";
-	console.log(req.params.id);
 	var inserts = [req.params.id];
 	var sqlData = pool.query(sql, inserts, function(error, results, fields){
 		if(error){
@@ -139,18 +138,49 @@ app.delete('/delete_doctor/:id', function(req, res, next){
 
 app.get('/patients', function(req, res, next){
 	var context = {};
-	var sql = "SELECT * FROM Doctor";
+	var sql = "SELECT * FROM Patient";
 	var sqlData = pool.query(sql, function(error, results, fields){
 		if(error){
 			res.write(JSON.stringify(error));
 			console.log(error);
 			res.end();
 		}else{
-			console.log(results);
+			context.patient = results;
 			res.render('patients', context);
 		}
 	})
 });
+
+app.post('/add_patient', function(req, res, next){
+	var context = {};
+	var sql = "INSERT INTO Patient (P_name, Birthday, Phone, Address) VALUES (?, ?, ?, ?)";
+	var inserts = [req.body.P_name, req.body.Birthday, req.body.Phone, req.body.Address];
+	var sqlData = pool.query(sql, inserts, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			context.doctor = results;
+			res.redirect('/patients');
+		}
+	})
+});
+
+app.delete('/delete_patient/:id', function(req, res, next){
+	console.log('got here');
+	var sql = "DELETE FROM Patient WHERE Patient_id = ?";
+	var inserts = [req.params.id];
+	var sqlData = pool.query(sql, inserts, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			res.status(202).end();
+		}
+	});
+})
 
 
 /**************************************************************************************
