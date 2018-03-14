@@ -1,0 +1,59 @@
+<div class="jumbotron text-center"><h1 class="display-3">Diagnoses</h1></div>	
+<div class="container-fluid py-5">
+	<table class="table text-center">
+		<thead class="thead-inverse">
+			<tr >
+				<th>Patient</th>
+				<th>Doctor</th>
+				<th>Description</th>
+				<th>Prescription</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<form id="add_diagnosis" action="/add_diagnosis" method="post">
+					<td>
+						<select id="P_name" type="text" class="form-control" name="Patient_id" required>
+							{{#each P_name}}
+								<option value="{{this.Patient_id}}">{{this.P_name}}</option>
+							{{/each}}
+						</select>
+					</td>
+					<td>
+						<select id="D_name" type="text" class="form-control" name="Doctor_id" required>
+							{{#each D_name}}
+								<option value="{{this.Doctor_id}}">{{this.D_name}}</option>
+							{{/each}}
+						</select>
+					</td>
+					<td><textarea id="Description" type="text" class="form-control" name="Description" required></textarea></td>
+					<td><button class="btn btn-primary">Add Diagnosis</button></td>
+				</form> 
+			</tr>
+		</tbody>
+		<tbody id="diagnosis-table">
+			{{#each diagnosis}}
+				<tr>
+						<td style="display:none">{{this.Diagnosis_id}}</td>
+						<td>{{this.Description}}</td>
+						<td>{{this.Drug_name}}</td>
+						<td><button class="btn btn-primary">Update</button></td>
+						<td><button onclick="delete_diagnosis({{this.Diagnosis_id}})" class="btn btn-danger">Delete</button></td>
+				</tr>
+			{{/each}}
+		</tbody>
+	</table>
+</div>
+
+
+<script type="text/javascript">
+	function delete_diagnosis(id){
+		$.ajax({
+			url: '/delete_diagnosis/' + id,
+			type: 'DELETE',
+			success: function(){
+				window.location.href = '/diagnoses';
+			}
+		});
+	}
+</script>
