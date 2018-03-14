@@ -25,7 +25,6 @@ app.set('port', process.argv[2]);
 
 
 app.get('/create-table', function(req, res, next){
-
 	pool.query(create.create_table().Doctor, function(err){
 		if(err){
 			res.write(JSON.stringify(err));
@@ -168,7 +167,6 @@ app.post('/add_patient', function(req, res, next){
 });
 
 app.delete('/delete_patient/:id', function(req, res, next){
-	console.log('got here');
 	var sql = "DELETE FROM Patient WHERE Patient_id = ?";
 	var inserts = [req.params.id];
 	var sqlData = pool.query(sql, inserts, function(error, results, fields){
@@ -188,8 +186,71 @@ app.delete('/delete_patient/:id', function(req, res, next){
 ***************************************************************************************/
 
 app.get('/patient-doctor', function(req, res, next){
-	res.render('patient-doctor');
+	var context = {};
+	var sql = "SELECT * FROM Has";
+	var sqlData = pool.query(sql, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			context.patient_doctor = results;
+			var sql = "SELECT * FROM Patient";
+			var sqlData = pool.query(sql, function(error, results, fields){
+				if(error){
+					res.write(JSON.stringify(error));
+					console.log(error);
+					res.end();	
+				}else{
+					context.patient_name = results;
+					var sql = "SELECT * FROM Doctor";
+					var sqlData = pool.query(sql, function(error, results, fields){
+						if(error){
+							res.write(JSON.stringify(error));
+							console.log(error);
+							res.end();								
+						}else{
+							context.doctor_name = results;
+							console.log(context)
+							res.render('patient-doctor', context);
+						}
+					})
+				}
+			})
+		}
+	})
 });
+
+app.post('/add_patient_doctor', function(req, res, next){
+	var context = {};
+	console.log(req.body);
+	var sql;
+	var inserts;
+	var sqlData = pool.query(sql, inserts, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			context.doctor = results;
+			res.redirect('/patient_doctor');
+		}
+	})
+});
+
+app.delete('/delete_patient_doctor/:id/:id', function(req, res, next){
+	var sql = "DELETE FROM Has WHERE Patient_id = ? AND Doctor_id = ?";
+	var inserts = [req.params.p_id, req.params.d_id];
+	var sqlData = pool.query(sql, inserts, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			res.status(202).end();
+		}
+	});
+})
 
 
 /**************************************************************************************

@@ -1,0 +1,57 @@
+<div class="container-fluid py-5">
+	<table class="table text-center">
+		<thead class="thead-inverse">
+			<tr >
+				<th>Patient Name</th>
+				<th>Doctor Name</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<form id="add_patient_doctor" action="/add_patient_doctor" method="POST">
+					<td>
+						<select id="P_name" type="text" class="form-control" name="P_name" required>
+							{{#each patient_name}}
+								<option value="{{this.Patient_id}}">{{this.P_name}}</option>
+							{{/each}}
+						</select>
+					</td>
+					<td>
+						<select id="D_name" type="text" class="form-control" name="D_name" required>
+							{{#each doctor_name}}
+								<option value="{{this.Doctor_id}}">{{this.D_name}}</option>
+							{{/each}}
+						</select>
+					</td>
+					<td><button class="btn btn-primary">Add Patient/Doctor Relationship</button></td>
+				</form> 
+			</tr>
+		</tbody>
+		<tbody id="patient-table">	
+			{{#each patient_doctor}}
+				<tr>
+						<td style="display:none">{{this.Patient_id}}</td>
+						<td>{{this.P_name}}</td>
+						<td style="display:none">{{this.Doctor_id}}</td>
+						<td>{{this.D_name}}</td>					
+						<td><button class="btn btn-primary">Update</button></td>
+						<td><button onclick="delete_patient_doctor({{this.Patient_id}}, {{this.Doctor_id}})" class="btn btn-danger">
+						Delete</button></td>
+				</tr>
+			{{/each}}
+		</tbody>
+	</table>
+</div>
+
+
+<script type="text/javascript">
+	function delete_patient_doctor(p_id, d_id){
+		$.ajax({
+			url: '/delete_patient_doctor/' + p_id + '/' + d_id,
+			type: 'DELETE',
+			success: function(){
+				window.location.href = '/patient_doctor';
+			}
+		});
+	}
+</script>
