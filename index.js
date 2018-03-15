@@ -24,7 +24,6 @@ app.set('mysql', mysql);
 app.set('port', process.argv[2]);
 
 app.get('/reset-table', function(req, res, next){
-	console.log('Hello');
 	pool.query(create.reset_table().Has, function(err){
 		if(err){
 			console.log(err);
@@ -446,7 +445,7 @@ app.get('/find_appointment/:search', function(req, res, next){
 							+ " INNER JOIN Doctor ON Appointment.Doctor_id = Doctor.Doctor_id" 
 								+ " LEFT JOIN Diagnosis ON Appointment.Diagnosis_id = Diagnosis.Diagnosis_id"
 									+ " WHERE P_name LIKE ? OR D_name LIKE ?";
-	var inserts = [req.params.search, req.params.search];
+	var inserts = ['%' + req.params.search + '%', '%' + req.params.search + '%'];
 	pool.query(sql, inserts, function(error, results, fields){
 		if(error){
 			res.write(JSON.stringify(error));
@@ -534,7 +533,7 @@ app.get('/find_appointment_diagnosis/:search', function(req, res, next){
 								+ " INNER JOIN Diagnosis ON Appointment.Diagnosis_id = Diagnosis.Diagnosis_id"
 									+ " LEFT JOIN Prescription ON Diagnosis.Prescription_id = Prescription.Prescription_id"
 										+ " WHERE P_name LIKE ? OR D_name LIKE ?";
-	var inserts = [req.params.search, req.params.search];
+	var inserts = ['%' + req.params.search + '%', '%' + req.params.search + '%'];
 	pool.query(sql, inserts, function(error, results, fields){
 		if(error){
 			res.write(JSON.stringify(error));
