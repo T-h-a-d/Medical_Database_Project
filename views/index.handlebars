@@ -1,0 +1,66 @@
+<div class="jumbotron text-center"><h1 class="display-3">Medical Database</h1>
+	<p class="lead">Search for an appointment by name, date, or by both using the form below</p>
+</div>
+<div class="row">
+	<div class="col">
+	</div>
+	<div class="col-lg-8 text-center">
+		<form id="date_search" action="/find_appointment_date" method="post">
+				<div class="input-group">
+					<input style="width: 400px;" type="text" name="search_name" placeholder="Search by patient or doctor name">
+				  <input type="date" class="form-control" name="Date" 
+					  placeholder="Search for an appointment by date">
+					<input type="submit" class="btn btn-primary" name="submit-button" value="Go!">
+				</div>
+		</form>
+	</div>
+	<div class="col"></div>
+</div>
+
+
+<div class="container-fluid py-5">
+	<table id="search_results" class="table text-center">
+	</table>
+</div>
+
+<script type="text/javascript">
+	$('#date_search').on('submit', function(event){
+		event.preventDefault();
+
+		var date_obj = {
+			date: this.Date.value,
+			search_name: this.search_name.value
+		}
+
+		$.ajax({
+			url: '/find_appointment_date',
+			data: date_obj,
+			success: function(data){
+				console.log(data);
+				$('#search_results').html(" ");
+				$('#search_results').append(`
+					<thead class="thead-inverse">
+						<tr>
+							<th>Doctor Name</th>
+							<th>Patient Name</th>
+							<th>Date</th>
+							<th>Office</th>
+						</tr>
+					</thead>
+					`)
+				data.forEach(function(element){
+					$('#search_results').append(`
+					<tbody>
+						<tr>
+							<td>${element.P_name}</td>
+							<td>${element.D_name}</td>
+							<td>${element.Date}</td>
+							<td>${element.Office}</td>
+						</tr>
+					</tbody>
+				`)
+				})
+			}
+		})
+	})
+</script>

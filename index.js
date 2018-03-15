@@ -546,6 +546,49 @@ app.get('/find_appointment_diagnosis/:search', function(req, res, next){
 });
 
 /**************************************************************************************
+** Search Queries
+***************************************************************************************/
+
+app.get('/find_appointment_date', function(req, res, next){
+
+	if(!req.query.date){
+		var sql = "SELECT * FROM Appointment" 
+			+ " INNER JOIN Patient ON Appointment.Patient_id = Patient.Patient_id"  
+				+ " INNER JOIN Doctor ON Appointment.Doctor_id = Doctor.Doctor_id" 
+					+ " WHERE P_name LIKE ? OR D_name LIKE ?";
+		var inserts = ['%' + req.query.search_name + '%', '%' + req.query.search_name + '%'];
+	}
+
+	else if(!req.query.search_name){
+		console.log('Search is null');
+		var sql = "SELECT * FROM Appointment" 
+							+ " INNER JOIN Patient ON Appointment.Patient_id = Patient.Patient_id"  
+								+ " INNER JOIN Doctor ON Appointment.Doctor_id = Doctor.Doctor_id" 
+									+ " WHERE Date = ?";
+		var inserts = [req.query.date];
+	}
+
+	else{
+		console.log('Both forms are filled');
+		var sql = "SELECT * FROM Appointment" 
+							+ " INNER JOIN Patient ON Appointment.Patient_id = Patient.Patient_id"  
+								+ " INNER JOIN Doctor ON Appointment.Doctor_id = Doctor.Doctor_id" 
+									+ " WHERE Date = ? AND (P_name LIKE ? OR D_name LIKE ?)";
+		var inserts = [req.query.date, '%' + req.query.search_name + '%', '%' + req.query.search_name + '%'];
+	}
+
+	pool.query(sql, inserts, function(error, results, fields){
+		if(error){
+			res.write(JSON.stringify(error));
+			console.log(error);
+			res.end();
+		}else{
+			res.send(results);
+		}
+	});
+});
+
+/**************************************************************************************
 ** Error paths
 ***************************************************************************************/
 
