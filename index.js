@@ -7,14 +7,21 @@ var create = require('./create_table.js')
 var path = require('path');
 var handlebars = require('express-handlebars').create({defaultLayout:'main'});
 var root = {root : path.join(__dirname, '/Public')};
+// var pool = mysql.createPool({
+// 	connectionLimit : 10,
+//   host            : 'classmysql.engr.oregonstate.edu',
+//   user            : 'cs340_sautert',
+//   password        : '0282',
+//   database        : 'cs340_sautert'
+// });
+
 var pool = mysql.createPool({
 	connectionLimit : 10,
-  host            : 'classmysql.engr.oregonstate.edu',
-  user            : 'cs340_sautert',
-  password        : '0282',
-  database        : 'cs340_sautert'
+  host            : 'us-cdbr-iron-east-05.cleardb.net',
+  user            : 'bdaf19a56b4c31',
+  password        : '1a5d68dd',
+  database        : 'heroku_5a16d1c8ababe5d'
 });
-const port = process.env.PORT || 8080;
 
 app.use(express.static(path.join(__dirname, '/Public')))
 app.engine('handlebars', handlebars.engine);
@@ -22,7 +29,7 @@ app.set('view engine', 'handlebars');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.set('mysql', mysql);
-app.set('port');
+app.set('port', (process.env.PORT || 3000));
 
 app.get('/reset-table', function(req, res, next){
 	pool.query(create.reset_table().Has, function(err){
