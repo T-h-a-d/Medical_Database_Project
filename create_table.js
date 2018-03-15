@@ -45,14 +45,14 @@ module.exports = {
 
        Diagnosis: `CREATE TABLE Diagnosis(
              			  Diagnosis_id INT NOT NULL AUTO_INCREMENT,
-             			  Description TEXT NULL,
+             			  Description TEXT NOT NULL,
              			  Prescription_id INT NULL,
              			  PRIMARY KEY (Diagnosis_id),
              			  INDEX Prescription_id_idx (Prescription_id ASC),
              			  CONSTRAINT Prescription_id
              			    FOREIGN KEY (Prescription_id)
              			    REFERENCES Prescription (Prescription_id)
-             			    ON DELETE NO ACTION
+             			    ON DELETE SET NULL
              			    ON UPDATE NO ACTION)
              			ENGINE = InnoDB;`,
 
@@ -62,7 +62,7 @@ module.exports = {
                 			  Patient_id INT NOT NULL,
                 			  Doctor_id INT NOT NULL,
                 			  Date DATETIME NOT NULL,
-                			  Diagnosis_id INT NOT NULL,
+                			  Diagnosis_id INT,
                 			  PRIMARY KEY (App_id),
                 			  INDEX Doctor_id_idx (Doctor_id ASC),
                 			  INDEX Patient_id_idx (Patient_id ASC),
@@ -70,17 +70,17 @@ module.exports = {
                 			  CONSTRAINT Patient_id_app
                 			    FOREIGN KEY (Patient_id)
                 			    REFERENCES Patient (Patient_id)
-                			    ON DELETE NO ACTION
+                			    ON DELETE CASCADE
                 			    ON UPDATE NO ACTION,
                 			  CONSTRAINT Doctor_id_app
                 			    FOREIGN KEY (Doctor_id)
                 			    REFERENCES Doctor (Doctor_id)
-                			    ON DELETE NO ACTION
+                			    ON DELETE CASCADE
                 			    ON UPDATE NO ACTION,
                 			  CONSTRAINT Diagnosis_id_app
                 			    FOREIGN KEY (Diagnosis_id)
                 			    REFERENCES Diagnosis (Diagnosis_id)
-                			    ON DELETE NO ACTION
+                			    ON DELETE SET NULL
                 			    ON UPDATE NO ACTION)
                 			ENGINE = InnoDB;`
 		} 

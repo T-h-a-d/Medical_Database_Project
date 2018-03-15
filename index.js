@@ -14,6 +14,7 @@ var pool = mysql.createPool({
   password        : '0282',
   database        : 'cs340_sautert'
 });
+const port = process.env.PORT || 8080;
 
 app.use(express.static(path.join(__dirname, '/Public')))
 app.engine('handlebars', handlebars.engine);
@@ -21,7 +22,7 @@ app.set('view engine', 'handlebars');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.set('mysql', mysql);
-app.set('port', process.argv[2]);
+app.set('port');
 
 app.get('/reset-table', function(req, res, next){
 	pool.query(create.reset_table().Has, function(err){
@@ -69,6 +70,9 @@ app.get('/reset-table', function(req, res, next){
 	});
 });
 
+/**************************************************************************************
+** Create table
+***************************************************************************************/
 
 
 app.get('/create-table', function(req, res, next){
@@ -125,7 +129,7 @@ app.get('/', function(req, res, next){
 
 
 /**************************************************************************************
-** Doctor paths
+** Doctor routes
 ***************************************************************************************/
 
 app.get('/doctors', function(req, res, next){
@@ -176,7 +180,7 @@ app.delete('/delete_doctor/:id', function(req, res, next){
 
 
 /**************************************************************************************
-** Patient paths
+** Patient routes
 ***************************************************************************************/
 
 app.get('/patients', function(req, res, next){
@@ -226,7 +230,7 @@ app.delete('/delete_patient/:id', function(req, res, next){
 
 
 /**************************************************************************************
-** Patient/Doctor Relationship paths
+** Patient/Doctor Relationship routes
 ***************************************************************************************/
 
 app.get('/patient-doctor', function(req, res, next){
@@ -295,7 +299,7 @@ app.delete('/delete_patient_doctor', function(req, res, next){
 
 
 /**************************************************************************************
-** Appointment paths
+** Appointment routes
 ***************************************************************************************/
 
 app.get('/appointments', function(req, res, next){
@@ -365,7 +369,7 @@ app.delete('/delete_appointment/:id', function(req, res, next){
 
 
 /**************************************************************************************
-** Diagnoses paths
+** Diagnoses routes
 ***************************************************************************************/
 
 app.get('/diagnoses', function(req, res, next){
@@ -460,7 +464,7 @@ app.get('/find_appointment/:search', function(req, res, next){
 
 
 /**************************************************************************************
-** Prescription paths
+** Prescription routes
 ***************************************************************************************/
 
 app.get('/prescriptions', function(req, res, next){
@@ -546,7 +550,7 @@ app.get('/find_appointment_diagnosis/:search', function(req, res, next){
 });
 
 /**************************************************************************************
-** Search Queries
+** Search query roots
 ***************************************************************************************/
 
 app.get('/find_appointment_date', function(req, res, next){
@@ -589,7 +593,7 @@ app.get('/find_appointment_date', function(req, res, next){
 });
 
 /**************************************************************************************
-** Error paths
+** Error routes
 ***************************************************************************************/
 
 app.use(function(req,res){

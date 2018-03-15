@@ -50,11 +50,13 @@ CREATE TABLE IF NOT EXISTS `Medical_DB`.`Has` (
   `Patient_id` INT NOT NULL,
   `Doctor_id` INT NOT NULL,
   PRIMARY KEY (`Patient_id`, `Doctor_id`),
+  INDEX `Patient_id_idx` (`Patient_id` ASC),
   CONSTRAINT `Patient_id`
     FOREIGN KEY ()
     REFERENCES `Medical_DB`.`Patient` ()
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
+  INDEX `Doctor_id_idx` (`Doctor_id` ASC),
   CONSTRAINT `Doctor_id`
     FOREIGN KEY (`Patient_id` , `Doctor_id`)
     REFERENCES `Medical_DB`.`Doctor` (`Doctor_id` , `Doctor_id`)
